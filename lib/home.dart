@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:klinik/berkas.dart';
+import 'package:klinik/diagnosa.dart';
 import 'package:klinik/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:klinik/profile.dart';
@@ -30,6 +31,7 @@ var tanggalreserv;
 var jamreserv;
 var nama_poli;
 var D_nama;
+var diagnosa;
 
 void main() {
   runApp(new MaterialApp(
@@ -85,6 +87,7 @@ class _home extends State<home> {
     jamreserv = jsondata["jam"];
     nama_poli = jsondata["nama_poli"];
     D_nama = jsondata["D_nama"];
+    diagnosa = jsondata['diagnosa'];
   }
 
   @override
@@ -319,6 +322,11 @@ class _home extends State<home> {
                                       new MaterialPageRoute(
                                           builder: (BuildContext context) =>
                                               new Berkas()));
+                                } else if (status == 6) {
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              new Diagnosa()));
                                 }
                               }
                             },

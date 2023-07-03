@@ -151,7 +151,7 @@ app.post('/profile', async (req, res) => {
 
 app.post('/checkreg', async (req, res) => {
     const {id} = req.body;
-    let sql = "SELECT pasien.username, pasien.id_pasien, pasien.registered, reservasi.status, reservasi.reservasi_id, pasien.nama AS P_nama, reservasi.poli_id, reservasi.tanggal, reservasi.jam, reservasi.menit, poli.nama_poli, dokter.nama AS D_nama from pasien LEFT JOIN reservasi on pasien.id_pasien = reservasi.pasien_id LEFT JOIN poli on reservasi.poli_id = poli.poli_id LEFT JOIN dokter on reservasi.dokter_id = dokter.id_dokter WHERE id_pasien = ?";
+    let sql = "SELECT pasien.username, pasien.id_pasien, pasien.registered, reservasi.status, reservasi.reservasi_id, pasien.nama AS P_nama, reservasi.poli_id, reservasi.tanggal, reservasi.jam, reservasi.menit, reservasi.hasil_diagnosa, poli.nama_poli, dokter.nama AS D_nama from pasien LEFT JOIN reservasi on pasien.id_pasien = reservasi.pasien_id LEFT JOIN poli on reservasi.poli_id = poli.poli_id LEFT JOIN dokter on reservasi.dokter_id = dokter.id_dokter WHERE id_pasien = ?";
     db.query(sql, [id], (error,result) => {
         if (error) {
             console.error('Database error:', error);
@@ -160,7 +160,31 @@ app.post('/checkreg', async (req, res) => {
         if (result.length === 0) {
             return res.status(401).json({ error: 'false'});
         }
-        
+        const user = result[result.length - 1]
+        const registered= user.registered;
+        let status= user.status;
+        const reservasi = user.reservasi_id;
+        const P_nama = user.P_nama;
+        const poli_id = user.poli_id;
+        const tanggal = user.tanggal;
+        const jam = user.jam;
+        const nama_poli = user.nama_poli;
+        const D_nama = user.D_nama;
+        const diagnosa = user.hasil_diagnosa;
+        if (status !== null){
+            // console.log(status)
+            return res.status(200).json({id: id,registered: registered, status: status, reservasi_id: reservasi, P_nama: P_nama, poli_id: poli_id, tanggal:tanggal, jam:jam, nama_poli:nama_poli, D_nama:D_nama, diagnosa: diagnosa});
+        }
+        else {
+            status = 0;
+            // console.log(status)
+            return res.status(200).json({id: id,registered: registered, status: status, reservasi_id: reservasi, P_nama: P_nama, poli_id: poli_id, tanggal:tanggal, jam:jam, nama_poli:nama_poli, D_nama:D_nama, diagnosa: diagnosa});
+        }
+
+    })
+})
+
+        // if wanted to get map value for /checkreg use this
         // const data = result.map((row) => {
         //     return {
         //         id: id,
@@ -177,28 +201,6 @@ app.post('/checkreg', async (req, res) => {
         //     };
         //   });
         //   return res.status(200).json(data);
-        const user = result[0]
-        const registered= user.registered;
-        let status= user.status;
-        const reservasi = user.reservasi_id;
-        const P_nama = user.P_nama;
-        const poli_id = user.poli_id;
-        const tanggal = user.tanggal;
-        const jam = user.jam;
-        const nama_poli = user.nama_poli;
-        const D_nama = user.D_nama;
-        if (status !== null){
-            // console.log(status)
-            return res.status(200).json({id: id,registered: registered, status: status, reservasi_id: reservasi, P_nama: P_nama, poli_id: poli_id, tanggal:tanggal, jam:jam, nama_poli:nama_poli, D_nama:D_nama});
-        }
-        else {
-            status = 0;
-            // console.log(status)
-            return res.status(200).json({id: id,registered: registered, status: status, reservasi_id: reservasi, P_nama: P_nama, poli_id: poli_id, tanggal:tanggal, jam:jam, nama_poli:nama_poli, D_nama:D_nama});
-        }
-
-    })
-})
 
 app.post('/poststatus', async (req, res) => {
     const {status, id} = req.body;
